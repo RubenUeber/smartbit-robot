@@ -1,0 +1,178 @@
+*** Settings ***
+Documentation        hello robot
+
+#Library    Browser  - arquivo base.resource e landing.resource já importam essa biblioteca. Por isso não é necessário tê-la aqui
+#Library    OperatingSystem
+
+Resource        ../resources/base.resource
+
+Test Setup        Start session
+Test Teardown     Take Screenshot        
+ 
+
+*** Test Cases ***
+Deve iniciar o cadastro do cliente
+    #preparação
+    
+    ${account}    Get Fake Account    
+
+   
+    Submit signup form    ${account}
+    Verify welcome message
+    
+    
+    #verificação
+    Wait For Elements State    text=Falta pouco para fazer parte da família Smartbit!
+    ...    visible
+    ...    5
+    
+
+Campo nome deve ser obrigatório
+    #preparação
+    #[Tags]    required
+
+    ${account}      Create Dictionary
+    ...    name=${EMPTY}
+    ...    email=ruben@gmail.com
+    ...    cpf=34779753678  
+
+    
+    Submit signup form    ${account}
+    Notice should be    Por favor informe o seu nome completo
+    
+    
+    Get Text    css=#signup h2    equal    Faça seu cadastro e venha para a Smartbit!
+
+    Click    xpath=//button[text()="Cadastrar"]
+    #Click    css=button >> text=Cadastrar
+    
+    #verificação
+    # Wait For Elements State    css=.notice
+    # ...    visible
+    # ...    3
+        
+    # Get Text    css=form .notice    equal    Por favor informe o seu nome completo
+
+    
+Campo email deve ser obrigatório
+    #preparação
+    #[Tags]    required
+
+    ${account}        Create Dictionary
+    ...    name=Ruben Test
+    ...    email=${EMPTY}
+    ...    cpf=34779753678 
+
+    
+    Submit signup form    ${account}
+    Notice should be    Por favor, informe o seu melhor e-mail
+   
+    
+    Get Text    css=#signup h2    equal    Faça seu cadastro e venha para a Smartbit!
+
+    #ação
+    #Fill Text    id=name    Ruben Ueber
+    #Fill Text    id=email    ruben@gmail.com
+    #Fill Text    id=cpf    34779753678
+
+    Click    xpath=//button[text()="Cadastrar"]
+    #Click    css=button >> text=Cadastrar
+    
+    #verificação
+    # Wait For Elements State    css=.notice
+    # ...    visible
+    # ...    3
+        
+    # Get Text    css=form .notice    equal    Por favor, informe o seu melhor e-mail
+
+    
+Campo cpf deve ser obrigatório
+    #preparação
+    #[Tags]    required
+
+    ${account}        Create Dictionary
+    ...    name=Ruben Test
+    ...    email=ruben@gmail.com
+    ...    cpf=${EMPTY}
+
+    
+    Submit signup form    ${account}
+    Notice should be    Por favor, informe o seu CPF
+    
+    
+    Get Text    css=#signup h2    equal    Faça seu cadastro e venha para a Smartbit!
+
+    #ação
+    # Fill Text    id=name    Ruben Ueber
+    # Fill Text    id=email    ruben@gmail.com
+    # #Fill Text    id=cpf    34779753678
+
+    Click    xpath=//button[text()="Cadastrar"]
+    #Click    css=button >> text=Cadastrar
+    
+    #verificação
+    # Wait For Elements State    css=.notice
+    # ...    visible
+    # ...    3
+        
+    # Get Text    css=form .notice    equal    Por favor, informe o seu CPF
+
+
+
+Campo email inválido
+    #preparação
+    #[Tags]    required
+
+    ${account}        Create Dictionary
+    ...    name=Ruben Ueber
+    ...    email=ruben#gmail.com
+    ...    cpf=34779753678
+
+    #ação
+    
+    Submit signup form    ${account}
+    Notice should be    Oops! O email informado é inválido
+   
+
+    Get Text    css=#signup h2    equal    Faça seu cadastro e venha para a Smartbit!
+
+    Click    xpath=//button[text()="Cadastrar"]
+    #Click    css=button >> text=Cadastrar
+    
+    #verificação
+    # Wait For Elements State    css=.notice
+    # ...    visible
+    # ...    3
+        
+    # Get Text    css=form .notice    equal    Oops! O email informado é inválido
+
+    
+Campo cpf formato inválido
+    #preparação
+    #[Tags]    required
+
+    ${account}        Create Dictionary
+    ...    name=Ruben Ueber
+    ...    email=ruben@gmail.com
+    ...    cpf=8$%779753678   
+
+    #ação
+    
+    Submit signup form    ${account}
+    Notice should be    Oops! O CPF informado é inválido
+    
+
+    Get Text    css=#signup h2    equal    Faça seu cadastro e venha para a Smartbit!
+
+    Click    xpath=//button[text()="Cadastrar"]
+    #Click    css=button >> text=Cadastrar
+    
+    #verificação
+    # Wait For Elements State    css=.notice
+    # ...    visible
+    # ...    3
+        
+    # Get Text    css=form .notice    equal    Oops! O CPF informado é inválido
+
+
+
